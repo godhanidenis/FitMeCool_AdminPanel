@@ -5,18 +5,20 @@ import UserList from "./pages/UserList";
 import { Box, CssBaseline } from "@mui/material";
 import ShopList from "./pages/ShopList";
 import Header from "./components/Header";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", bgcolor: "#F3F6F6", height: "100vh" }}>
       <CssBaseline />
       <Sidebar open={open} setOpen={setOpen} />
       <Box component="main" sx={{ flexGrow: 1 }}>
         <Header open={open} />
         <Box sx={{ p: 3 }}>
           <Routes>
+            <Route path="/" exact element={<Dashboard />} />
             <Route path="/userList" exact element={<UserList />} />
             <Route path="/shopList" exact element={<ShopList />} />
           </Routes>

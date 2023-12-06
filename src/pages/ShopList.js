@@ -13,6 +13,7 @@ import { styled } from "@mui/material/styles";
 import { getAllShops } from "../graphql/query/GetAllShops";
 import moment from "moment";
 import { CircularProgress } from "@mui/material";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const StyledTableCell = styled(TableCell)(({ theme, index }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,7 +40,7 @@ const ShopList = () => {
   const [shopData, setShopData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const getCustomer = () => {
+  const getShop = () => {
     setLoading(true);
     getAllShops().then(
       (res) => {
@@ -54,13 +55,14 @@ const ShopList = () => {
   };
 
   useEffect(() => {
-    getCustomer();
+    getShop();
   }, []);
 
   return (
     <div>
-      <div className="p-2 bg-[#0000001a] flex justify-center rounded-xl my-2 text-3xl font-semibold">
-        Shop List
+      <div className="p-2 my-3 flex items-center gap-2">
+        <span className="font-semibold text-lg">Shop List</span>
+        <ChevronRightIcon />
       </div>
       <div className="relative">
         <TableContainer component={Paper}>
@@ -100,10 +102,10 @@ const ShopList = () => {
                     <TableCell align="center">
                       <div className="flex justify-center">
                         <div
-                          className={`line-clamp-1 w-32 text-white py-2 rounded-xl ${
-                            item?.shop_type !== "shop"
-                              ? "bg-[#31acb4]"
-                              : "bg-[#259246]"
+                          className={`line-clamp-1 w-32 font-semibold py-2 rounded-xl ${
+                            item?.shop_type === "shop"
+                              ? "text-[#29977E]  bg-[#29977d21]"
+                              : "text-[#000] bg-[#00000011]"
                           }`}
                         >
                           {item?.shop_type}

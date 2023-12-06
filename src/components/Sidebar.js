@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import StoreIcon from "@mui/icons-material/Store";
 import { styled } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import {
   Divider,
@@ -14,7 +15,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import MuiDrawer from "@mui/material/Drawer";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "../Assets/Logo.png";
 
 const drawerWidth = 240;
@@ -66,7 +67,9 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 const Sidebar = ({ open, setOpen }) => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const [selectedValue, setSelectedValue] = useState("");
 
   const handleDrawerClose = () => {
     setOpen(!open);
@@ -79,6 +82,11 @@ const Sidebar = ({ open, setOpen }) => {
 
   const sidebarTabs = [
     {
+      label: "Dashboard",
+      icon: <DashboardIcon />,
+      path: "/",
+    },
+    {
       label: "Users",
       icon: <PeopleAltIcon />,
       path: "/userList",
@@ -90,11 +98,28 @@ const Sidebar = ({ open, setOpen }) => {
     },
   ];
 
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setSelectedValue("Dashboard");
+    } else if (location.pathname === "/userList") {
+      setSelectedValue("Users");
+    } else if (location.pathname === "/shopList") {
+      setSelectedValue("Shops");
+    }
+  }, [location.pathname]);
+
   return (
     <>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader className="!flex !justify-between">
-          {open && <img src={Logo} alt="Logo" className="w-40 h-8 ms-2" />}
+          {open && (
+            <img
+              src={Logo}
+              alt="Logo"
+              className="w-40 h-8 ms-2 cursor-pointer"
+              onClick={() => navigate("/")}
+            />
+          )}
           <IconButton onClick={handleDrawerClose}>
             {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
@@ -107,6 +132,7 @@ const Sidebar = ({ open, setOpen }) => {
               disablePadding
               sx={{ display: "block" }}
               onClick={() => handleNavigation(tab.path)}
+              className={`${selectedValue === tab.label && "bg-[#29977d1e]"}`}
             >
               <ListItemButton
                 sx={{
@@ -121,13 +147,25 @@ const Sidebar = ({ open, setOpen }) => {
                     mr: open ? 3 : "auto",
                     justifyContent: "center",
                   }}
+                  className={`${
+                    selectedValue === tab.label && "!text-[#29977E]"
+                  }`}
                 >
                   {tab.icon}
                 </ListItemIcon>
                 <ListItemText
-                  primary={tab.label}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
+                  sx={{
+                    opacity: open ? 1 : 0,
+                  }}
+                >
+                  <span
+                    className={`${
+                      selectedValue === tab.label && "!text-[#29977E]"
+                    } font-semibold text-[#00000079]`}
+                  >
+                    {tab.label}
+                  </span>
+                </ListItemText>
               </ListItemButton>
             </ListItem>
           ))}

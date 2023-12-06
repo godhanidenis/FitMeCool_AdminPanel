@@ -12,6 +12,9 @@ import {
 import { styled } from "@mui/material/styles";
 import { getAllCustomers } from "../graphql/query/GetAllCustomers";
 import { CircularProgress } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const StyledTableCell = styled(TableCell)(({ theme, index }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -57,8 +60,9 @@ const UserList = () => {
   }, []);
   return (
     <div>
-      <div className="p-2 bg-[#0000001a] flex justify-center rounded-xl my-2 text-3xl font-semibold">
-        User List
+      <div className="p-2 my-3 flex items-center gap-2">
+        <span className="font-semibold text-lg">User List</span>
+        <ChevronRightIcon />
       </div>
       <div className="relative">
         <TableContainer component={Paper}>
@@ -71,6 +75,7 @@ const UserList = () => {
                   "contact Number",
                   "Email",
                   "User Type",
+                  "Action",
                 ].map((itm, index) => (
                   <StyledTableCell align="center" key={index} index={index}>
                     <b>{itm}</b>
@@ -102,14 +107,43 @@ const UserList = () => {
                     <TableCell align="center">
                       <div className="flex justify-center">
                         <div
-                          className={`line-clamp-1 w-32 text-white py-2 rounded-xl ${
+                          className={`line-clamp-1 w-32 py-2 rounded-xl font-semibold ${
                             item?.user_type === "vendor"
-                              ? "bg-[#31acb4]"
-                              : "bg-[#259246]"
+                              ? "text-[#29977E]  bg-[#29977d21]"
+                              : "text-[#000] bg-[#00000011]"
                           }`}
                         >
                           {item?.user_type}
                         </div>
+                      </div>
+                    </TableCell>
+                    <TableCell align="center">
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          className={`flex justify-center items-center w-8 h-8 rounded-full transition-colors bg-black text-white duration-300 hover:opacity-80 `}
+                        >
+                          <EditIcon
+                            sx={{
+                              fontSize: 18,
+                              "@media (max-width: 648px)": {
+                                fontSize: 16,
+                              },
+                            }}
+                          />
+                        </button>
+                        <button
+                          className={`flex justify-center items-center w-8 h-8 rounded-full transition-colors bg-red-600 duration-300 hover:opacity-80`}
+                        >
+                          <DeleteIcon
+                            className="!text-white"
+                            sx={{
+                              fontSize: 18,
+                              "@media (max-width: 648px)": {
+                                fontSize: 16,
+                              },
+                            }}
+                          />
+                        </button>
                       </div>
                     </TableCell>
                   </StyledTableRow>
