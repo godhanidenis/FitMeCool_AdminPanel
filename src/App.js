@@ -11,7 +11,14 @@ const App = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Box sx={{ display: "flex", bgcolor: "#F3F6F6", height: "100vh" }}>
+    <Box
+      sx={{
+        display: "flex",
+        bgcolor: "#F3F6F6",
+        height: "100vh",
+        overflow: "scroll",
+      }}
+    >
       <CssBaseline />
       <Sidebar open={open} setOpen={setOpen} />
       <Box component="main" sx={{ flexGrow: 1 }}>
