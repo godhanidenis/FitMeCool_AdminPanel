@@ -3,7 +3,6 @@ import WLogo from "../Assets/whiteLogo.png";
 import { Avatar } from "@mui/material";
 
 const Header = ({ open }) => {
-  console.log("object :>> ");
   return (
     <div className="flex justify-between items-center bg-[#151827] p-[13px] px-20">
       <div className={"text-white font-semibold text-[22px]"}>
