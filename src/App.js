@@ -1,19 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import UserList from "./pages/UserList";
 import { Box, CssBaseline } from "@mui/material";
 import ShopList from "./pages/ShopList";
+import Header from "./components/Header";
 
 const App = () => {
+  const [open, setOpen] = useState(false);
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <Sidebar />
+      <Sidebar open={open} setOpen={setOpen} />
       <Box component="main" sx={{ flexGrow: 1 }}>
-        <div className="p-4 ps-12 text-white font-semibold bg-[#151827] text-[22px] ">
-          Admin Panel
-        </div>
+        <Header open={open} />
         <Box sx={{ p: 3 }}>
           <Routes>
             <Route path="/userList" exact element={<UserList />} />

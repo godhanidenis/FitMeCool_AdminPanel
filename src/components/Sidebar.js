@@ -65,9 +65,7 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-const Sidebar = () => {
-  const [open, setOpen] = React.useState(false);
-
+const Sidebar = ({ open, setOpen }) => {
   const navigate = useNavigate();
 
   const handleDrawerClose = () => {
@@ -96,7 +94,7 @@ const Sidebar = () => {
     <>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader className="!flex !justify-between">
-          {open && <img src={Logo} alt="Logo" className="w-40 h-9 ms-2" />}
+          {open && <img src={Logo} alt="Logo" className="w-40 h-8 ms-2" />}
           <IconButton onClick={handleDrawerClose}>
             {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
