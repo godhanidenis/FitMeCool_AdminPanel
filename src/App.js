@@ -6,6 +6,8 @@ import { Box, CssBaseline } from "@mui/material";
 import ShopList from "./pages/ShopList";
 import Header from "./components/Header";
 import Dashboard from "./pages/Dashboard";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
   const [open, setOpen] = useState(false);
@@ -19,6 +21,7 @@ const App = () => {
         overflow: "scroll",
       }}
     >
+      <ToastContainer />
       <CssBaseline />
       <Sidebar open={open} setOpen={setOpen} />
       <Box component="main" sx={{ flexGrow: 1 }}>

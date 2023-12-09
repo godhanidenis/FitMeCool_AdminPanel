@@ -12,9 +12,11 @@ import {
 import { styled } from "@mui/material/styles";
 import { getAllCustomers } from "../graphql/query/GetAllCustomers";
 import { CircularProgress } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import DeleteAccountConfirmationModal from "../components/Modal/DeleteAccountConfirmationModal";
+import { deleteAccount } from "../graphql/mutations/authMutations";
+import { toast } from "react-toastify";
 
 const StyledTableCell = styled(TableCell)(({ theme, index }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -40,6 +42,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const UserList = () => {
   const [customerData, setCustomerData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [userDeleteModalOpen, setUserDeleteModalOpen] = useState(false);
+  const [userId, setUserId] = useState("");
 
   const getCustomer = () => {
     setLoading(true);
@@ -120,19 +124,11 @@ const UserList = () => {
                     <TableCell align="center">
                       <div className="flex gap-2 justify-center">
                         <button
-                          className={`flex justify-center items-center w-8 h-8 rounded-full transition-colors bg-black text-white duration-300 hover:opacity-80 `}
-                        >
-                          <EditIcon
-                            sx={{
-                              fontSize: 18,
-                              "@media (max-width: 648px)": {
-                                fontSize: 16,
-                              },
-                            }}
-                          />
-                        </button>
-                        <button
                           className={`flex justify-center items-center w-8 h-8 rounded-full transition-colors bg-red-600 duration-300 hover:opacity-80`}
+                          onClick={() => {
+                            setUserDeleteModalOpen(true);
+                            setUserId(item?.id);
+                          }}
                         >
                           <DeleteIcon
                             className="!text-white"
@@ -157,6 +153,25 @@ const UserList = () => {
           </div>
         )}
       </div>
+      <DeleteAccountConfirmationModal
+        deleteModalOpen={userDeleteModalOpen}
+        setDeleteModalOpen={setUserDeleteModalOpen}
+        onClickItemDelete={async () => {
+          await deleteAccount({ id: userId, forAdmin: true }).then(
+            (res) => {
+              console.log("User deleted");
+
+              toast.success(res?.data?.deleteAccount, {
+                theme: "colored",
+              });
+            },
+            (error) => {
+              toast.error(error.message, { theme: "colored" });
+            }
+          );
+          setUserDeleteModalOpen(false);
+        }}
+      />
     </div>
   );
 };
