@@ -1,40 +1,93 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
 import UserList from "./pages/UserList";
-import { Box, CssBaseline } from "@mui/material";
 import ShopList from "./pages/ShopList";
-import Header from "./components/Header";
 import Dashboard from "./pages/Dashboard";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
+import Login from "./pages/Login";
+import DashboardLayout from "./components/DashboardLayout";
+import AuthCommonLayout from "./components/AuthCommonLayout";
+import Signup from "./pages/Signup";
+import { PrivateRoutes, PublicRoutes } from "./components/PrivateRoutes";
 
 const App = () => {
-  const [open, setOpen] = useState(false);
+  const [accessToken, setAccessToken] = useState();
 
+  useEffect(() => {
+    const getAccessToken = localStorage.getItem("token");
+    setAccessToken(getAccessToken);
+  }, [accessToken]);
   return (
-    <Box
-      sx={{
-        display: "flex",
-        bgcolor: "#F3F6F6",
-        height: "100vh",
-        overflow: "scroll",
-      }}
-    >
-      <ToastContainer />
-      <CssBaseline />
-      <Sidebar open={open} setOpen={setOpen} />
-      <Box component="main" sx={{ flexGrow: 1 }}>
-        <Header open={open} />
-        <Box sx={{ p: 3 }}>
-          <Routes>
-            <Route path="/" exact element={<Dashboard />} />
-            <Route path="/userList" exact element={<UserList />} />
-            <Route path="/shopList" exact element={<ShopList />} />
-          </Routes>
-        </Box>
-      </Box>
-    </Box>
+    <Routes>
+      <Route element={<PublicRoutes />}>
+        <Route
+          path="/"
+          exact
+          element={
+            <AuthCommonLayout>
+              <Login />
+            </AuthCommonLayout>
+          }
+        />
+
+        <Route
+          path="/signup"
+          exact
+          element={
+            <AuthCommonLayout>
+              <Signup />
+            </AuthCommonLayout>
+          }
+        />
+        <Route
+          path="*"
+          exact
+          element={
+            <AuthCommonLayout>
+              <Login />
+            </AuthCommonLayout>
+          }
+        />
+      </Route>
+      <Route element={<PrivateRoutes />}>
+        <Route
+          path="/dashboard"
+          exact
+          element={
+            <DashboardLayout>
+              <Dashboard />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/userList"
+          exact
+          element={
+            <DashboardLayout>
+              <UserList />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/shopList"
+          exact
+          element={
+            <DashboardLayout>
+              <ShopList />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="*"
+          exact
+          element={
+            <DashboardLayout>
+              <Dashboard />
+            </DashboardLayout>
+          }
+        />
+      </Route>
+    </Routes>
   );
 };
 

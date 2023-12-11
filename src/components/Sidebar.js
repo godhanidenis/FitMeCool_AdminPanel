@@ -84,7 +84,7 @@ const Sidebar = ({ open, setOpen }) => {
     {
       label: "Dashboard",
       icon: <DashboardIcon />,
-      path: "/",
+      path: "/dashboard",
     },
     {
       label: "Users",
@@ -99,7 +99,7 @@ const Sidebar = ({ open, setOpen }) => {
   ];
 
   useEffect(() => {
-    if (location.pathname === "/") {
+    if (location.pathname === "/dashboard") {
       setSelectedValue("Dashboard");
     } else if (location.pathname === "/userList") {
       setSelectedValue("Users");
@@ -117,7 +117,7 @@ const Sidebar = ({ open, setOpen }) => {
               src={Logo}
               alt="Logo"
               className="w-40 h-8 ms-2 cursor-pointer"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/dashboard")}
             />
           )}
           <IconButton onClick={handleDrawerClose}>

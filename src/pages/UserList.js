@@ -44,6 +44,7 @@ const UserList = () => {
   const [loading, setLoading] = useState(false);
   const [userDeleteModalOpen, setUserDeleteModalOpen] = useState(false);
   const [userId, setUserId] = useState("");
+  const [deleteLoader, setDeleteLoader] = useState(false);
 
   const getCustomer = () => {
     setLoading(true);
@@ -154,9 +155,11 @@ const UserList = () => {
         )}
       </div>
       <DeleteAccountConfirmationModal
+        deleteLoader={deleteLoader}
         deleteModalOpen={userDeleteModalOpen}
         setDeleteModalOpen={setUserDeleteModalOpen}
         onClickItemDelete={async () => {
+          setDeleteLoader(true);
           await deleteAccount({ id: userId, forAdmin: true }).then(
             (res) => {
               console.log("User deleted");
@@ -164,12 +167,15 @@ const UserList = () => {
               toast.success(res?.data?.deleteAccount, {
                 theme: "colored",
               });
+              setDeleteLoader(false);
             },
             (error) => {
               toast.error(error.message, { theme: "colored" });
+              setDeleteLoader(false);
             }
           );
           setUserDeleteModalOpen(false);
+          getCustomer();
         }}
       />
     </div>
