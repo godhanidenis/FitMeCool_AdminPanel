@@ -123,9 +123,10 @@ const UserList = ({ setSelectedVender }) => {
                                 : "text-[#000] bg-[#00000011]"
                             }`}
                             onClick={() => {
-                              item?.user_type === "vendor" &&
+                              if (item?.user_type === "vendor") {
                                 setSelectedVender(item?.id);
-                              navigate("/shopList");
+                                navigate("/shopList");
+                              }
                             }}
                           >
                             {item?.user_type}
