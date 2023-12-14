@@ -11,10 +11,22 @@ export const getAllShops = async (payload) => {
           owner_id
           shop_name
           shop_email
-          shop_logo
-          shop_cover_image
+          shop_logo {
+            extraSmall
+            small
+            medium
+            large
+          }
+          shop_cover_image {
+            large
+            medium
+            small
+          }
           shop_images {
-            links
+            links {
+              medium
+              small
+            }
           }
           shop_video
           shop_type

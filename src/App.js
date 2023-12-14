@@ -12,7 +12,7 @@ import { PrivateRoutes, PublicRoutes } from "./components/PrivateRoutes";
 
 const App = () => {
   const [accessToken, setAccessToken] = useState();
-
+  const [selectedVender, setSelectedVender] = useState({});
   useEffect(() => {
     const getAccessToken = localStorage.getItem("token");
     setAccessToken(getAccessToken);
@@ -64,7 +64,7 @@ const App = () => {
           exact
           element={
             <DashboardLayout>
-              <UserList />
+              <UserList setSelectedVender={setSelectedVender} />
             </DashboardLayout>
           }
         />
@@ -73,7 +73,10 @@ const App = () => {
           exact
           element={
             <DashboardLayout>
-              <ShopList />
+              <ShopList
+                selectedVender={selectedVender}
+                setSelectedVender={setSelectedVender}
+              />
             </DashboardLayout>
           }
         />

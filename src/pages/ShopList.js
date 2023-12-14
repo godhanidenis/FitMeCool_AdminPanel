@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Paper,
   Table,
   TableBody,
@@ -14,6 +15,7 @@ import { getAllShops } from "../graphql/query/GetAllShops";
 import moment from "moment";
 import { CircularProgress } from "@mui/material";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import NorthEastIcon from "@mui/icons-material/NorthEast";
 
 const StyledTableCell = styled(TableCell)(({ theme, index }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -36,9 +38,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const ShopList = () => {
+const ShopList = ({ selectedVender, setSelectedVender }) => {
   const [shopData, setShopData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(true);
+
+  const resultRef = useRef(null);
 
   const getShop = () => {
     setLoading(true);
@@ -54,6 +59,29 @@ const ShopList = () => {
     );
   };
 
+  const handleButtonClick = (item) => {
+    const shopName = item?.shop_name.replaceAll(" ", "-");
+    const Link = process.env.REACT_APP_BASE_URL.split("/")[2];
+    if (Link === "dev-api.fitmecool.com") {
+      const url = `https://dev.fitmecool.com/shop/${shopName}/${item?.id}`;
+      window.open(url, "_blank");
+    } else {
+      const url = `https://fitmecool.com/shop/${shopName}/${item?.id}`;
+      window.open(url, "_blank");
+    }
+  };
+
+  useEffect(() => {
+    selectedVender &&
+      resultRef.current &&
+      resultRef.current.scrollIntoView({ behavior: "smooth" });
+    selectedVender &&
+      setTimeout(() => {
+        setSelectedRow(false);
+      }, 3000);
+    !selectedRow && setSelectedVender("");
+  }, [selectedVender, setSelectedVender, selectedRow]);
+
   useEffect(() => {
     getShop();
   }, []);
@@ -65,6 +93,13 @@ const ShopList = () => {
         <ChevronRightIcon />
       </div>
       <div className="relative">
+        {/* {tableShopId && (
+          <Alert severity={"error"} className="my-5">
+            <span className="cursor-pointer font-semibold ml-2">
+              Shop Not Created
+            </span>
+          </Alert>
+        )} */}
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
@@ -78,6 +113,7 @@ const ShopList = () => {
                   "Subscription Date",
                   "Reviews",
                   "Followers",
+                  "Action",
                 ].map((itm, index) => (
                   <StyledTableCell align="center" key={index} index={index}>
                     <b>{itm}</b>
@@ -86,66 +122,100 @@ const ShopList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {!loading &&
-                shopData?.map((item, index) => (
-                  <StyledTableRow key={index}>
-                    <TableCell align="center">{index + 1}</TableCell>
+              {!loading ? (
+                shopData.length !== 0 ? (
+                  shopData?.map((item, index) => (
+                    <StyledTableRow
+                      key={index}
+                      ref={selectedVender === item?.user_id ? resultRef : null}
+                      className={`${
+                        selectedVender === item?.user_id &&
+                        selectedRow &&
+                        "!bg-[#3485ff25]"
+                      }`}
+                    >
+                      <TableCell align="center">{index + 1}</TableCell>
 
-                    <TableCell align="center">
-                      <div className="line-clamp-1">{item?.shop_name}</div>
-                    </TableCell>
-                    <TableCell align="center">
-                      <div className="line-clamp-1">
-                        {item?.shop_email ? item?.shop_email : "-"}
-                      </div>
-                    </TableCell>
-                    <TableCell align="center">
-                      <div className="flex justify-center">
-                        <div
-                          className={`line-clamp-1 w-32 font-semibold py-2 rounded-xl ${
-                            item?.shop_type === "shop"
-                              ? "text-[#29977E]  bg-[#29977d21]"
-                              : "text-[#000] bg-[#00000011]"
-                          }`}
-                        >
-                          {item?.shop_type}
+                      <TableCell align="center">
+                        <div className="line-clamp-1">{item?.shop_name}</div>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="line-clamp-1">
+                          {item?.shop_email ? item?.shop_email : "-"}
                         </div>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="flex justify-center">
+                          <div
+                            className={`line-clamp-1 w-32 font-semibold py-2 rounded-xl ${
+                              item?.shop_type === "shop"
+                                ? "text-[#29977E]  bg-[#29977d21]"
+                                : "text-[#000] bg-[#00000011]"
+                            }`}
+                          >
+                            {item?.shop_type}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="line-clamp-1">
+                          {moment(Number(item?.createdAt)).format("DD-MM-YYYY")}
+                        </div>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="line-clamp-1">
+                          {item?.subscriptionDate
+                            ? moment(Number(item?.subscriptionDate)).format(
+                                "DD-MM-YYYY"
+                              )
+                            : "-"}
+                        </div>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="line-clamp-1">
+                          {item?.shopReviewCount ? item?.shopReviewCount : 0}
+                        </div>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="line-clamp-1">
+                          {item?.shopFollowerCount
+                            ? item?.shopFollowerCount
+                            : 0}
+                        </div>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            className={`flex justify-center items-center p-2 gap-1 rounded-lg transition-colors bg-[#29977E] text-white font-semibold duration-300 hover:opacity-80`}
+                            onClick={() => handleButtonClick(item)}
+                          >
+                            <NorthEastIcon className="!text-white !text-[20px]" />
+                          </button>
+                        </div>
+                      </TableCell>
+                    </StyledTableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} align="center">
+                      <div className="text-[20px] font-semibold">
+                        No Shop Found
                       </div>
                     </TableCell>
-                    <TableCell align="center">
-                      <div className="line-clamp-1">
-                        {moment(Number(item?.createdAt)).format("DD-MM-YYYY")}
-                      </div>
-                    </TableCell>
-                    <TableCell align="center">
-                      <div className="line-clamp-1">
-                        {item?.subscriptionDate
-                          ? moment(Number(item?.subscriptionDate)).format(
-                              "DD-MM-YYYY"
-                            )
-                          : "-"}
-                      </div>
-                    </TableCell>
-                    <TableCell align="center">
-                      <div className="line-clamp-1">
-                        {item?.shopReviewCount ? item?.shopReviewCount : 0}
-                      </div>
-                    </TableCell>
-                    <TableCell align="center">
-                      <div className="line-clamp-1">
-                        {item?.shopFollowerCount ? item?.shopFollowerCount : 0}
-                      </div>
-                    </TableCell>
-                  </StyledTableRow>
-                ))}
+                  </TableRow>
+                )
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={8} align="center">
+                    <div className="flex p-10 justify-center items-center h-full w-full">
+                      <CircularProgress className="!text-[#29977E]" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
-        {loading && (
-          <div className="flex p-10 justify-center items-center h-full w-full">
-            <CircularProgress className="!text-[#29977E]" />
-          </div>
-        )}
       </div>
     </div>
   );

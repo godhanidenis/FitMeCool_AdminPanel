@@ -17,6 +17,8 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import DeleteAccountConfirmationModal from "../components/Modal/DeleteAccountConfirmationModal";
 import { deleteAccount } from "../graphql/mutations/authMutations";
 import { toast } from "react-toastify";
+import { deleteObjectsInFolder } from "../services/wasabi";
+import { useNavigate } from "react-router-dom";
 
 const StyledTableCell = styled(TableCell)(({ theme, index }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,12 +41,14 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const UserList = () => {
+const UserList = ({ setSelectedVender }) => {
   const [customerData, setCustomerData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userDeleteModalOpen, setUserDeleteModalOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [deleteLoader, setDeleteLoader] = useState(false);
+
+  const navigate = useNavigate();
 
   const getCustomer = () => {
     setLoading(true);
@@ -89,70 +93,89 @@ const UserList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {!loading &&
-                customerData?.map((item, index) => (
-                  <StyledTableRow key={index}>
-                    <TableCell align="center">{index + 1}</TableCell>
+              {!loading ? (
+                customerData.length !== 0 ? (
+                  customerData?.map((item, index) => (
+                    <StyledTableRow key={index}>
+                      <TableCell align="center">{index + 1}</TableCell>
 
-                    <TableCell align="center">
-                      <div className="line-clamp-1">
-                        {item?.first_name} {item?.last_name}
-                      </div>
-                    </TableCell>
-                    <TableCell align="center">
-                      <div className="line-clamp-1">
-                        {item?.user_contact ? item?.user_contact : "-"}
-                      </div>
-                    </TableCell>
-                    <TableCell align="center">
-                      <div className="line-clamp-1">
-                        {item?.user_email ? item?.user_email : "-"}
-                      </div>
-                    </TableCell>
-                    <TableCell align="center">
-                      <div className="flex justify-center">
-                        <div
-                          className={`line-clamp-1 w-32 py-2 rounded-xl font-semibold ${
-                            item?.user_type === "vendor"
-                              ? "text-[#29977E]  bg-[#29977d21]"
-                              : "text-[#000] bg-[#00000011]"
-                          }`}
-                        >
-                          {item?.user_type}
+                      <TableCell align="center">
+                        <div className="line-clamp-1">
+                          {item?.first_name} {item?.last_name}
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell align="center">
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          className={`flex justify-center items-center w-8 h-8 rounded-full transition-colors bg-red-600 duration-300 hover:opacity-80`}
-                          onClick={() => {
-                            setUserDeleteModalOpen(true);
-                            setUserId(item?.id);
-                          }}
-                        >
-                          <DeleteIcon
-                            className="!text-white"
-                            sx={{
-                              fontSize: 18,
-                              "@media (max-width: 648px)": {
-                                fontSize: 16,
-                              },
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="line-clamp-1">
+                          {item?.user_contact ? item?.user_contact : "-"}
+                        </div>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="line-clamp-1">
+                          {item?.user_email ? item?.user_email : "-"}
+                        </div>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="flex justify-center">
+                          <div
+                            className={`line-clamp-1 w-32 py-2 rounded-xl font-semibold ${
+                              item?.user_type === "vendor"
+                                ? "text-[#29977E]  bg-[#29977d21] cursor-pointer"
+                                : "text-[#000] bg-[#00000011]"
+                            }`}
+                            onClick={() => {
+                              item?.user_type === "vendor" &&
+                                setSelectedVender(item?.id);
+                              navigate("/shopList");
                             }}
-                          />
-                        </button>
+                          >
+                            {item?.user_type}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            className={`flex justify-center items-center w-8 h-8 rounded-full transition-colors bg-red-600 duration-300 hover:opacity-80`}
+                            onClick={() => {
+                              setUserDeleteModalOpen(true);
+                              setUserId(item?.id);
+                            }}
+                          >
+                            <DeleteIcon
+                              className="!text-white"
+                              sx={{
+                                fontSize: 18,
+                                "@media (max-width: 648px)": {
+                                  fontSize: 16,
+                                },
+                              }}
+                            />
+                          </button>
+                        </div>
+                      </TableCell>
+                    </StyledTableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} align="center">
+                      <div className="text-[20px] font-semibold">
+                        No User Found
                       </div>
                     </TableCell>
-                  </StyledTableRow>
-                ))}
+                  </TableRow>
+                )
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={8} align="center">
+                    <div className="flex p-10 justify-center items-center h-full w-full">
+                      <CircularProgress className="!text-[#29977E]" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
-        {loading && (
-          <div className="flex p-10 justify-center items-center h-full w-full">
-            <CircularProgress className="!text-[#29977E]" />
-          </div>
-        )}
       </div>
       <DeleteAccountConfirmationModal
         deleteLoader={deleteLoader}
@@ -161,8 +184,10 @@ const UserList = () => {
         onClickItemDelete={async () => {
           setDeleteLoader(true);
           await deleteAccount({ id: userId, forAdmin: true }).then(
-            (res) => {
+            async (res) => {
               console.log("User deleted");
+              const folderStructure = `user_${userId}`;
+              await deleteObjectsInFolder(folderStructure);
 
               toast.success(res?.data?.deleteAccount, {
                 theme: "colored",
