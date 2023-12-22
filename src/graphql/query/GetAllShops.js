@@ -11,6 +11,7 @@ export const getAllShops = async (payload) => {
           owner_id
           shop_name
           shop_email
+          shop_status
           shop_logo {
             extraSmall
             small

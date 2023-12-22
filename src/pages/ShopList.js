@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Alert,
+  // Alert,
   Paper,
   Table,
   TableBody,
@@ -16,6 +16,7 @@ import moment from "moment";
 import { CircularProgress } from "@mui/material";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import NorthEastIcon from "@mui/icons-material/NorthEast";
+import CustomSwitchComponent from "../components/core/CustomSwitchComponent";
 
 const StyledTableCell = styled(TableCell)(({ theme, index }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -63,10 +64,10 @@ const ShopList = ({ selectedVender, setSelectedVender }) => {
     const shopName = item?.shop_name.replaceAll(" ", "-");
     const Link = process.env.REACT_APP_BASE_URL.split("/")[2];
     if (Link === "dev-api.fitmecool.com") {
-      const url = `https://dev.fitmecool.com/shop/${shopName}/${item?.id}`;
+      const url = `https://www.dev.fitmecool.com/shop/${shopName}/${item?.id}`;
       window.open(url, "_blank");
     } else {
-      const url = `https://fitmecool.com/shop/${shopName}/${item?.id}`;
+      const url = `https://www.fitmecool.com/shop/${shopName}/${item?.id}`;
       window.open(url, "_blank");
     }
   };
@@ -113,6 +114,7 @@ const ShopList = ({ selectedVender, setSelectedVender }) => {
                   "Subscription Date",
                   "Reviews",
                   "Followers",
+                  "Status",
                   "Action",
                 ].map((itm, index) => (
                   <StyledTableCell align="center" key={index} index={index}>
@@ -184,6 +186,14 @@ const ShopList = ({ selectedVender, setSelectedVender }) => {
                         </div>
                       </TableCell>
                       <TableCell align="center">
+                        <div className="line-clamp-1">
+                          <CustomSwitchComponent
+                            shopStatus={item?.shop_status}
+                            shopId={item?.id}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell align="center">
                         <div className="flex gap-2 justify-center">
                           <button
                             className={`flex justify-center items-center p-2 gap-1 rounded-lg transition-colors bg-[#29977E] text-white font-semibold duration-300 hover:opacity-80`}
@@ -197,7 +207,7 @@ const ShopList = ({ selectedVender, setSelectedVender }) => {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={8} align="center">
+                    <TableCell colSpan={10} align="center">
                       <div className="text-[20px] font-semibold">
                         No Shop Found
                       </div>
@@ -206,7 +216,7 @@ const ShopList = ({ selectedVender, setSelectedVender }) => {
                 )
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} align="center">
+                  <TableCell colSpan={10} align="center">
                     <div className="flex p-10 justify-center items-center h-full w-full">
                       <CircularProgress className="!text-[#29977E]" />
                     </div>

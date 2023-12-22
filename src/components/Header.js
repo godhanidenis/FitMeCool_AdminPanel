@@ -15,6 +15,7 @@ import { getAllCustomers } from "../graphql/query/GetAllCustomers";
 import { toast } from "react-toastify";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { useScrollDirection } from "./core/useScrollDirection";
 
 const Header = ({ open }) => {
   const [accessToken, setAccessToken] = useState();
@@ -22,6 +23,7 @@ const Header = ({ open }) => {
   const [loginUserData, setLoginUserData] = useState([]);
 
   const navigate = useNavigate();
+  const scrollDirection = useScrollDirection();
 
   const getCustomer = () => {
     getAllCustomers().then(
@@ -49,7 +51,11 @@ const Header = ({ open }) => {
   }, [customerData]);
 
   return (
-    <div className="flex justify-between items-center bg-[#151827] p-[13px] px-20">
+    <div
+      className={` ${
+        scrollDirection === "down" ? "-top-32" : "top-0"
+      } transition-all duration-500 flex justify-between items-center bg-[#151827] p-[13px] px-20 z-30 sticky`}
+    >
       <div className={"text-white font-semibold text-[22px]"}>
         {!open && (
           <img
