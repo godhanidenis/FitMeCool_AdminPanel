@@ -12,7 +12,7 @@ import { PrivateRoutes, PublicRoutes } from "./components/PrivateRoutes";
 
 const App = () => {
   const [accessToken, setAccessToken] = useState();
-  const [selectedVender, setSelectedVender] = useState({});
+  const [selectedVender, setSelectedVender] = useState("");
   useEffect(() => {
     const getAccessToken = localStorage.getItem("token");
     setAccessToken(getAccessToken);

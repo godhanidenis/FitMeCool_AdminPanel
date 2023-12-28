@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  // Alert,
+  Alert,
   Paper,
   Table,
   TableBody,
@@ -40,11 +40,14 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const ShopList = ({ selectedVender, setSelectedVender }) => {
-  const [shopData, setShopData] = useState([]);
+  const [shopData, setShopData] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState(true);
+  const [shopNot, setShopNot] = useState(false);
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
 
   const resultRef = useRef(null);
+  const resultRef1 = useRef(null);
 
   const getShop = () => {
     setLoading(true);
@@ -73,19 +76,44 @@ const ShopList = ({ selectedVender, setSelectedVender }) => {
   };
 
   useEffect(() => {
-    selectedVender &&
-      resultRef.current &&
-      resultRef.current.scrollIntoView({ behavior: "smooth" });
+    const intervalId = setInterval(() => {
+      setSecondsElapsed((prevSeconds) => prevSeconds + 1);
+    }, 1000);
+
+    const stopTimer = setTimeout(() => {
+      clearInterval(intervalId);
+    }, 3000);
+
+    return () => {
+      clearInterval(intervalId);
+
+      clearTimeout(stopTimer);
+    };
+  }, []);
+
+  useEffect(() => {
     selectedVender &&
       setTimeout(() => {
         setSelectedRow(false);
-      }, 3000);
-    !selectedRow && setSelectedVender("");
-  }, [selectedVender, setSelectedVender, selectedRow]);
+      }, 5000);
+  }, [selectedVender, setSelectedVender]);
+
+  !selectedRow && setSelectedVender("");
 
   useEffect(() => {
     getShop();
   }, []);
+
+  const targetElement = resultRef.current;
+  const targetElement1 = resultRef1.current;
+
+  useEffect(() => {
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    } else if (targetElement1) {
+      setShopNot(true);
+    }
+  }, [targetElement, secondsElapsed, targetElement1]);
 
   return (
     <div>
@@ -94,13 +122,13 @@ const ShopList = ({ selectedVender, setSelectedVender }) => {
         <ChevronRightIcon />
       </div>
       <div className="relative">
-        {/* {tableShopId && (
+        {shopNot && selectedVender && shopData !== "" && (
           <Alert severity={"error"} className="my-5">
             <span className="cursor-pointer font-semibold ml-2">
               Shop Not Created
             </span>
           </Alert>
-        )} */}
+        )}
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
@@ -129,7 +157,11 @@ const ShopList = ({ selectedVender, setSelectedVender }) => {
                   shopData?.map((item, index) => (
                     <StyledTableRow
                       key={index}
-                      ref={selectedVender === item?.user_id ? resultRef : null}
+                      ref={
+                        selectedVender === item?.user_id
+                          ? resultRef
+                          : selectedVender !== item?.user_id && resultRef1
+                      }
                       className={`${
                         selectedVender === item?.user_id &&
                         selectedRow &&
